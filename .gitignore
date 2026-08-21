@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.build/
+ develop-eggs/
+dist/
+downloads/
+eggs/
+*.egg-info/
+.hypothesis/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage htmlcov/
+*.cover
+navicon/
+
+# OS
+.DS_Store
+.env.local
+.envrc
+
+# Raven
+.DS_Store.env
