@@ -14,7 +14,8 @@ eggs/
 .mypy_cache/
 .pytest_cache/
 .tox/
-.coverage htmlcov/
+.coverage
+htmlcov/
 *.cover
 navicon/
 
@@ -22,6 +23,3 @@ navicon/
 .DS_Store
 .env.local
 .envrc
-
-# Raven
-.DS_Store.env

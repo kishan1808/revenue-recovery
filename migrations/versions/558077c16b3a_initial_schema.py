@@ -38,7 +38,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id', name=op.f('pk_customers')),
     sa.UniqueConstraint('email', name=op.f('uq_customers_email'))
     )
-    op.create_index('ix_customers_email', 'customers', ['email'], unique=True)
     op.create_index(op.f('ix_customers_id'), 'customers', ['id'], unique=False)
     op.create_table('payments',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -64,19 +63,11 @@ def upgrade() -> None:
     sa.UniqueConstraint('reference_id', name=op.f('uq_payments_reference_id'))
     )
     op.create_index(op.f('ix_payments_id'), 'payments', ['id'], unique=False)
-    op.create_index(
-        'ix_payments_reference_id',
-        'payments',
-        ['reference_id'],
-        unique=True,
-    )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_index('ix_payments_reference_id', table_name='payments')
     op.drop_index(op.f('ix_payments_id'), table_name='payments')
     op.drop_table('payments')
     op.drop_index(op.f('ix_customers_id'), table_name='customers')
-    op.drop_index('ix_customers_email', table_name='customers')
     op.drop_table('customers')
