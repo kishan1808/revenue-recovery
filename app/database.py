@@ -1,10 +1,13 @@
-from os import environ
+from sqlalchemy import Engine, MetaData, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-from sqlalchemy import MetaData
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
+from app.config import settings
 
-DATABASE_URL = environ.get("DATABASE_URL", "postgresql+asyncpg://localhost/testdb")
+if not settings.DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not configured. "
+        "Set it via environment variable or .env file (see .env.example)."
+    )
 
 NAMING_CONVENTION = {
     "ix": "ix_%(column_0_label)s",
@@ -18,17 +21,6 @@ metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 Base = declarative_base(metadata=metadata)
 
-engine: AsyncEngine = create_async_engine(
-    DATABASE_URL,
-    echo=False,
-    future=True,
-)
+engine: Engine = create_engine(settings.DATABASE_URL, echo=False)
 
-session_factory = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    future=True,
-)
-
-session = scoped_session(session_factory)  # type: ignore[assignment]
+session_factory = sessionmaker(bind=engine, expire_on_commit=False)

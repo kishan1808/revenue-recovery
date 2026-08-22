@@ -4,7 +4,7 @@
 An AI-powered system to help merchants recover revenue at risk from failed payments and checkout abandonment.
 
 ## Technology Stack
-- **Backend**: Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, PostgreSQL, asyncpg, httpx
+- **Backend**: Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy 2.x (synchronous), Alembic, PostgreSQL, psycopg 3, httpx
 - **Testing**: pytest, Ruff
 - **AI**: Provider-agnostic abstraction with structured Pydantic outputs
 - **Payment**: Razorpay Test Mode, Payment Links
@@ -34,7 +34,7 @@ An AI-powered system to help merchants recover revenue at risk from failed payme
    ```
    pip install -r pyproject.toml
    ```
-   (or `pip install fastapi uvicorn pydantic pydantic-settings sqlalchemy asyncpg httpx pytest ruff`)
+   (or `pip install fastapi uvicorn pydantic pydantic-settings "sqlalchemy>=2.0" "psycopg[binary]" httpx pytest ruff`)
 
 4. **Configure environment variables**
    ```
@@ -43,7 +43,7 @@ An AI-powered system to help merchants recover revenue at risk from failed payme
    Edit `.env` and set your Neon PostgreSQL `DATABASE_URL`.
 
    ```
-   DATABASE_URL=postgresql+asyncpg://username:password@ep-name.region.postgres.neon.tech/database_name
+    DATABASE_URL=postgresql+psycopg://username:password@ep-name.region.postgres.neon.tech/database_name?sslmode=require
    APP_ENV=development
    DEBUG=True
    ```
@@ -68,7 +68,7 @@ An AI-powered system to help merchants recover revenue at risk from failed payme
 ### Database
 - No local PostgreSQL installation needed — uses Neon (cloud PostgreSQL)
 - Connection string comes from `DATABASE_URL` environment variable
-- SQLAlchemy 2.x with async/asyncpg
+- SQLAlchemy 2.x synchronous with psycopg 3
 - Alembic migrations managed separately
 
 ### Security
@@ -83,7 +83,7 @@ revenue-recovery/
 ├── app/
 │   ├── main.py          # FastAPI application with /health
 │   ├── config.py        # pydantic-settings configuration
-│   ├── database/        # SQLAlchemy async engine/session
+│   ├── database.py      # SQLAlchemy sync engine/session
 │   └── ... (other packages)
 ├── tests/               # pytest tests
 ├── migrations/          # Alembic migrations
