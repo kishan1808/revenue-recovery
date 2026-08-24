@@ -32,7 +32,7 @@ An AI-powered system to help merchants recover revenue at risk from failed payme
 
 3. **Install dependencies**
    ```
-   pip install -r pyproject.toml
+   pip install -e ".[dev]"
    ```
    (or `pip install fastapi uvicorn pydantic pydantic-settings "sqlalchemy>=2.0" "psycopg[binary]" httpx pytest ruff`)
 
