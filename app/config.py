@@ -10,6 +10,11 @@ class RecoverySettings(BaseSettings):
         description="PostgreSQL connection string in psycopg format "
         "(postgresql+psycopg://user:password@host:port/dbname)",
     )
+    RAZORPAY_WEBHOOK_SECRET: str = Field(
+        default="",
+        description="Razorpay webhook signing secret "
+        "(never logged, printed, persisted, or committed)",
+    )
     APP_ENV: str = "development"
     DEBUG: bool = True
 
