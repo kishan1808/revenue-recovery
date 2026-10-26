@@ -11,16 +11,25 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Dedicated opt-in target for PostgreSQL integration tests.
 #
-# When TEST_DATABASE_URL is provided it OVERRIDES any ambient or .env
-# DATABASE_URL for the whole test process. This guarantees that
-# integration tests -- including destructive Alembic upgrade/downgrade
-# cycles -- can only ever reach the isolated database the developer
-# explicitly pointed them at (e.g. the Neon "revenue-recovery-test"
-# branch), never an unreviewed default target.
+# When TEST_DATABASE_URL is provided, it is validated by a fail-closed
+# safety guard (tests.database_safety) to guarantee that it is a valid
+# PostgreSQL target, does NOT target the application's configured
+# database, has no ambiguous whitespace or query options, and has explicit
+# destructive-test opt-in.
 #
-# When it is not provided, every integration test module skips itself
-# clearly instead of silently falling back to another database.
-TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
+# When safety checks pass, it OVERRIDES any ambient or .env DATABASE_URL
+# for the whole test process and synchronizes os.environ["TEST_DATABASE_URL"].
+#
+# When TEST_DATABASE_URL is genuinely unset or empty, every integration
+# test module skips itself cleanly instead of falling back to another database.
+# Whitespace-only or malformed configurations fail closed immediately.
+from tests.database_safety import (  # noqa: E402
+    bootstrap_test_database_environment,
+)
 
-if TEST_DATABASE_URL:
-    os.environ["DATABASE_URL"] = TEST_DATABASE_URL
+RAW_TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", None)
+
+TEST_DATABASE_URL = bootstrap_test_database_environment(
+    raw_test_url=RAW_TEST_DATABASE_URL,
+    project_root=PROJECT_ROOT,
+)
